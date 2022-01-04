@@ -4,9 +4,9 @@ if ( !class_exists('Puc_v4p11_Vcs_ThemeUpdateChecker', false) ):
 
 	class Puc_v4p11_Vcs_ThemeUpdateChecker extends Puc_v4p11_Theme_UpdateChecker implements Puc_v4p11_Vcs_BaseChecker {
 		/**
-		 * @var string The branch where to look for updates. Defaults to "master".
+		 * @var string The branch where to look for updates. Defaults to "main".
 		 */
-		protected $branch = 'master';
+		protected $branch = 'main';
 
 		/**
 		 * @var Puc_v4p11_Vcs_Api Repository API client.
@@ -32,6 +32,15 @@ if ( !class_exists('Puc_v4p11_Vcs_ThemeUpdateChecker', false) ):
 		}
 
 		public function requestUpdate() {
+
+			//We have to make several remote API requests to gather all the necessary info
+			//which can take a while on slow networks.
+			if ( function_exists('set_time_limit') ) {
+				@set_time_limit(60);
+			}
+
+			// \__log( 'theme jere' );
+
 			$api = $this->api;
 			$api->setLocalDirectory($this->package->getAbsoluteDirectoryPath());
 
@@ -41,9 +50,11 @@ if ( !class_exists('Puc_v4p11_Vcs_ThemeUpdateChecker', false) ):
 			//Figure out which reference (tag or branch) we'll use to get the latest version of the theme.
 			$updateSource = $api->chooseReference($this->branch);
 			if ( $updateSource ) {
+				// \__log( $updateSource );
 				$ref = $updateSource->name;
 				$update->download_url = $updateSource->downloadUrl;
 			} else {
+				\__log( 'nada...' );
 				do_action(
 					'puc_api_error',
 					new WP_Error(
@@ -56,6 +67,8 @@ if ( !class_exists('Puc_v4p11_Vcs_ThemeUpdateChecker', false) ):
 				);
 				$ref = $this->branch;
 			}
+
+			// \__log( $ref );
 
 			//Get headers from the main stylesheet in this branch/tag. Its "Version" header and other metadata
 			//are what the WordPress install will actually see after upgrading, so they take precedence over releases/tags.

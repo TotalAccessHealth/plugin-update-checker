@@ -70,6 +70,8 @@ if ( !class_exists('Puc_v4p11_Factory', false) ):
 
 			//Plugin or theme?
 			$themeDirectory = self::getThemeDirectoryName($fullPath);
+			// \__log( '$fullPath: '.$fullPath );
+			// \__log( '$themeDirectory: '.$themeDirectory );
 			if ( self::isPluginFile($fullPath) ) {
 				$type = 'Plugin';
 				$id = $fullPath;
@@ -83,6 +85,8 @@ if ( !class_exists('Puc_v4p11_Factory', false) ):
 					htmlentities($fullPath)
 				));
 			}
+
+			// \__log( 'slug: '.$slug.' == '.$type );
 
 			//Which hosting service does the URL point to?
 			$service = self::getVcsService($metadataUrl);
@@ -176,22 +180,31 @@ if ( !class_exists('Puc_v4p11_Factory', false) ):
 		protected static function isPluginFile($absolutePath) {
 			//Is the file inside the "plugins" or "mu-plugins" directory?
 			$pluginDir = self::normalizePath(WP_PLUGIN_DIR);
+			// \__log( '$pluginDir: '.$pluginDir );
 			$muPluginDir = self::normalizePath(WPMU_PLUGIN_DIR);
+			// \__log( '$muPluginDir: '.$muPluginDir );
 			if ( (strpos($absolutePath, $pluginDir) === 0) || (strpos($absolutePath, $muPluginDir) === 0) ) {
+				// \__log( 'path is a match to plugin or muplugin path: '.$absolutePath );
 				return true;
 			}
 
 			//Is it a file at all? Caution: is_file() can fail if the parent dir. doesn't have the +x permission set.
 			if ( !is_file($absolutePath) ) {
+				// \__log( 'failed is_file check' );
 				return false;
 			}
 
 			//Does it have a valid plugin header?
 			//This is a last-ditch check for plugins symlinked from outside the WP root.
+			/*
 			if ( function_exists('get_file_data') ) {
 				$headers = get_file_data($absolutePath, array('Name' => 'Plugin Name'), 'plugin');
+				\__log( 'headers -> name: '.$headers['Name'] );
 				return !empty($headers['Name']);
 			}
+			*/
+
+			// \__log( 'not a plugin' );
 
 			return false;
 		}

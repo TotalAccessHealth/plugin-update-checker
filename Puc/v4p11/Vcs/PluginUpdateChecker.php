@@ -3,9 +3,9 @@ if ( !class_exists('Puc_v4p11_Vcs_PluginUpdateChecker') ):
 
 	class Puc_v4p11_Vcs_PluginUpdateChecker extends Puc_v4p11_Plugin_UpdateChecker implements Puc_v4p11_Vcs_BaseChecker {
 		/**
-		 * @var string The branch where to look for updates. Defaults to "master".
+		 * @var string The branch where to look for updates. Defaults to "main".
 		 */
-		protected $branch = 'master';
+		protected $branch = 'main';
 
 		/**
 		 * @var Puc_v4p11_Vcs_Api Repository API client.
@@ -46,6 +46,8 @@ if ( !class_exists('Puc_v4p11_Vcs_PluginUpdateChecker') ):
 			$info->slug = $this->slug;
 
 			$this->setInfoFromHeader($this->package->getPluginHeader(), $info);
+
+			// \__log( 'plugin jere' );
 
 			//Pick a branch or tag.
 			$updateSource = $api->chooseReference($this->branch);
